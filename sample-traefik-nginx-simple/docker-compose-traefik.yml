@@ -1,0 +1,31 @@
+services:
+  traefik:
+    image: traefik:latest
+    ports:
+      - target: 80
+        published: 80
+        mode: host
+        protocol: tcp
+      - target: 8080
+        published: 8080
+        mode: host
+        protocol: tcp
+    networks:
+      - traefik-net
+    command:
+      - --api.insecure=true
+      - --api.dashboard=true
+      - --providers.swarm.exposedbydefault=false
+      - --providers.swarm.network=traefik-net
+      - --entrypoints.web.address=:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  traefik-net:
+    driver: overlay
+    name: traefik-net

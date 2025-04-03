@@ -1,0 +1,19 @@
+services:
+
+  monservice:
+    image: nginx:latest
+    networks:
+      - traefik-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+          - traefik.enable=true
+          - traefik.http.routers.monservice.entrypoints=web
+          - traefik.http.routers.monservice.rule=Host(`monservice.localhost`)
+          - traefik.http.services.monservice.loadbalancer.server.port=80
+
+networks:
+  traefik-net:
+    external: true
